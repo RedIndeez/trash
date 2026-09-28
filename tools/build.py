@@ -358,5 +358,19 @@ for rr in range(4,r+1):
     for c in (10,11): ws7.cell(rr,c).number_format='0.00'
 for i,wd in enumerate([4,6,8,9,12,11,9,9,8,12,10],1): ws7.column_dimensions[L(i)].width=wd
 ws7.row_dimensions[3].height=60
+# ---- данные закрытия для спецификаций на чертежах
+vk=set(vmap)|{(l,m) for (m,l),v in KP.items() if v}
+VJ=[]
+for l,m in sorted(vk,key=lambda k:(order.index(k[0]),key(k[1]))):
+    w,hh,q,f,rr=vmap.get((l,m),(None,None,0,None,None))
+    sp=cnt[(m,l)] if l in LITS else 0
+    cl=min(q,sp); ca=round(eval(f)/q*cl,2) if q else 0
+    VJ.append(dict(l=l,m=m,w=w,h=hh,vdc=q,kp=KP.get((m,l),0),close=cl,area=ca))
+DJ=[]
+for l,dm,h_,w_,side,q,f,rr in VDCD:
+    cl=dclose.get((l,dm),0)
+    DJ.append(dict(l=l,m=dm,w=w_,h=h_,vdc=q,kp=KD[(l,dm)],close=cl,area=round(eval(f)/q*cl,2),src='; '.join(dsrc[(l,dm)])))
+for dm,l,left in dleft: DJ.append(dict(l=l,m=dm,w=None,h=None,vdc=0,kp=left,close=0,area=0,src=''))
+import json as _j; _j.dump(dict(vitr=VJ,doors=DJ),open('closing.json','w'),ensure_ascii=False,indent=0)
 wb.calculation.fullCalcOnLoad=True
 wb.save('Спецификация_витражей.xlsx')
