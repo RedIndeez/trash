@@ -238,5 +238,65 @@ for rr in range(s3,r+1):
 for i,wd in enumerate([6,26,9,9,10,10,9,12,11,10,17],1): ws5.column_dimensions[L(i)].width=wd
 for x in (hr,hr2,hr3): ws5.row_dimensions[x].height=60
 ws5.page_setup.orientation='landscape'; ws5.sheet_properties.pageSetUpPr.fitToPage=True; ws5.page_setup.fitToHeight=0
+# ---- Sheet 6: сверка с ВДЦ (Приложение №2, лист «Корректировка»)
+VDC=[('А', 'Вн-6', 4200, 4820, 4, '4.2*4.82*4', 18), ('А', 'Вн-8', 2600, 4820, 1, '2.6*4.82*1', 20), ('А', 'Вн-14', 2485, 4820, 1, '2.485*4.82*1', 22), ('А', 'Вн-15', 1400, 4820, 1, '1.4*4.82*1', 24), ('А', 'Вн-22', 2150, 2720, 5, '2.15*2.72*5', 26), ('А', 'Вн-23', 3540, 3020, 1, '3.54*3.02*1', 28), ('А', 'Вн-24', 2610, 3020, 1, '2.61*3.02*1', 30), ('Б', 'Вн-6', 4200, 4820, 4, '4.2*4.82*4', 42), ('Б', 'Вн-15', 1400, 4820, 1, '1.4*4.82', 44), ('Б', 'Вн-17', 4200, 4820, 1, '4.2*4.82', 46), ('Б', 'Вн-18', 2600, 4820, 1, '2.6*4.82', 48), ('Б', 'Вн-22', 2150, 2720, 5, '2.15*2.72*5', 50), ('Б', 'Вн-23', 3540, 3020, 1, '3.54*3.02*1', 52), ('Б', 'Вн-24', 2610, 3020, 1, '2.61*3.02*1', 54), ('В', 'Вн-6', 4200, 4820, 1, '4.2*4.82*1', 66), ('В', 'Вн-16', 1200, 4820, 1, '1.2*4.82*1', 68), ('В', 'Вн-13', 3200, 4820, 1, '3.2*4.82*1', 70), ('В', 'Вн-19', 3000, 4820, 2, '3*4.82*2', 72), ('В', 'Вн-22', 2150, 2720, 4, '2.15*2.72*4', 74), ('Г', 'Вн-6', 4200, 4820, 1, '4.2*4.82*1', 88), ('Г', 'Вн-10', 4160, 4820, 1, '4.16*4.82*1', 90), ('Г', 'Вн-11', 2450, 4820, 1, '2.45*4.82', 92), ('Г', 'Вн-12', 3370, 4820, 1, '3.37*4.82', 94), ('Г', 'Вн-17', 4200, 4820, 1, '4.2*4.82', 96), ('Г', 'Вн-20', 3900, 4820, 1, '3.9*4.82', 98), ('Г', 'Вн-21', 2920, 4820, 1, '2.92*4.82', 100), ('Г', 'Вн-22', 2150, 2720, 4, '2.15*2.72*4', 102), ('Д', 'Вн-6', 4200, 4820, 2, '4.2*4.82*2', 116), ('Д', 'Вн-7', 3020, 4820, 1, '3.02*4.82*1', 118), ('Д', 'Вн-9', 3870, 4820, 1, '3.87*4.82', 120), ('Д', 'Вн-17', 4200, 4820, 1, '4.2*4.82', 122), ('Ж', 'Вн-1', 4750, 3870, 1, '4.75*3.87', 136), ('Ж', 'Вн-2', 4750, 3870, 1, '4.75*3.87', 138), ('Ж', 'Вн-3', 6100, 3870, 1, '6.1*3.87', 140), ('Ж', 'Вн-4', 5400, 3470, 1, '5.4*3.47*1', 142), ('Ж', 'Вн-5', 7800, 3470, 1, '7.8*3.4', 144)]
+ws6=wb.create_sheet('Сверка с ВДЦ',1)
+ws6.append(['Сверка спецификации с ВДЦ (Приложение № 2, лист «Корректировка»). К закрытию — меньшее из ВДЦ и спецификации, площадь по размерам ВДЦ']); ws6['A1'].font=Font(bold=True,size=12)
+ws6.append(['Строка ВДЦ — номер строки «Изготовление и монтаж» на листе «Корректировка»'])
+h=['№','Литер','Марка','Размер по ВДЦ, мм','Строка ВДЦ','По ВДЦ, шт','По ВДЦ, м²','По спецификации, шт','Площадь по КП, м²','К закрытию, шт','К закрытию по ВДЦ, м²','Не закрыто по ВДЦ, шт','Сверх ВДЦ, шт','Замечание']
+ws6.append(h)
+for c in range(1,len(h)+1): x=ws6.cell(3,c); x.font=hf; x.alignment=C; x.fill=fill
+vmap={(l,m):(w,hh,q,f,rr) for l,m,w,hh,q,f,rr in VDC}
+keys=list(vmap)
+for l in LITS:
+    for m in marks:
+        if cnt[(m,l)] and (l,m) not in vmap: keys.append((l,m))
+order=['А','Б','В','Г','Д','Ж']
+keys.sort(key=lambda k:(order.index(k[0]),key(k[1])))
+VNOTE={('Г','Вн-6'):'2 шт. перенесены из КП лит. А и Б; в ВДЦ лит. Г — 1 шт., зато в ВДЦ А и Б по 4 шт. (не закрыто по 1)',
+       ('А','Вн-6'):'1 шт. из КП перенесена в лит. Г',('Б','Вн-6'):'1 шт. из КП перенесена в лит. Г',
+       ('В','Вн-16'):'по чертежу и КП 3 шт., в ВДЦ 1',('В','Вн-17'):'в ВДЦ лит. В нет',
+       ('Ж','Вн-5'):'в ВДЦ площадь =7.8*3.4 (26,52), а в названии 7800х3470 (27,07)'}
+r=4
+for n,(l,m) in enumerate(keys,1):
+    q_s=cnt[(m,l)] if l in LITS else 0
+    a_s=area(m,l) if q_s else None
+    if (l,m) in vmap:
+        w,hh,q,f,rr=vmap[(l,m)]
+        row=[n,l,m,f'{w}×{hh}',rr,q,'='+f,q_s or None,a_s,f'=MIN(F{r},N(H{r}))',f'=ROUND(G{r}/F{r}*J{r},2)',f'=F{r}-J{r}',f'=N(H{r})-J{r}']
+    else:
+        row=[n,l,m,None,None,None,None,q_s,a_s,0,0,0,f'=N(H{r})']
+    st=VNOTE.get((l,m))
+    if st is None:
+        qv=vmap[(l,m)][2] if (l,m) in vmap else 0
+        st='кол-во совпадает' if qv==q_s else ('нет в спецификации (нет в КП)' if q_s==0 else ('в ВДЦ нет' if qv==0 else f'в ВДЦ {qv}, в спецификации {q_s}'))
+    if q_s and (l,m) in vmap:
+        uv=eval(vmap[(l,m)][3])/vmap[(l,m)][2]; uk=a_s/q_s
+        if abs(uk-uv)/uv>0.05:
+            sz=sorted({f'{w}×{h}' for doc,p,mm,w,h,q,a,ll in KPP if mm==m and ll.startswith(l) or (mm==m and (l,m)==('Г','Вн-6') and ll.startswith('Г'))})
+            st+=f'; размер по КП {", ".join(sz)} — отличается от ВДЦ более чем на 5%' if sz else f'; площадь 1 шт по КП {uk:.2f} против {uv:.2f} по ВДЦ'
+    ws6.append(row+[st]); r+=1
+ws6.cell(r,3,'ИТОГО').font=hf
+for c in range(6,14): ws6.cell(r,c,f'=SUM({L(c)}4:{L(c)}{r-1})').font=hf
+for c in range(1,len(h)+1): ws6.cell(r,c).fill=tf
+box(ws6,3,r,1,len(h)); tot=r
+yel=PatternFill('solid',fgColor='FFF2CC')
+for rr in range(4,r+1):
+    for c in range(1,len(h)+1): ws6.cell(rr,c).alignment=W if c==14 else C
+    for c in (7,9,11): ws6.cell(rr,c).number_format='#,##0.00'
+    if rr<r and not str(ws6.cell(rr,14).value).startswith('кол-во совпадает'):
+        for c in range(1,len(h)+1): ws6.cell(rr,c).fill=yel
+r+=2
+ws6.cell(r,2,'Вариант: 2 шт. Вн-6 лит. Г закрыть по строкам ВДЦ лит. А и Б (там не закрыто по 1 шт.) — дополнительно, м²:')
+ws6.merge_cells(start_row=r,start_column=2,end_row=r,end_column=10); ws6.cell(r,2).alignment=Alignment(horizontal='right',vertical='center',wrap_text=True); ws6.row_dimensions[r].height=30
+ws6.cell(r,11,'=ROUND(4.2*4.82*2,2)').number_format='#,##0.00'; ws6.cell(r,11).font=hf
+r+=1
+ws6.cell(r,2,'Итого к закрытию с этим вариантом, м²:')
+ws6.merge_cells(start_row=r,start_column=2,end_row=r,end_column=10); ws6.cell(r,2).alignment=Alignment(horizontal='right')
+ws6.cell(r,11,f'=K{tot}+K{r-1}').number_format='#,##0.00'; ws6.cell(r,11).font=hf
+for i,wd in enumerate([4,6,8,12,8,8,10,12,10,10,12,11,9,40],1): ws6.column_dimensions[L(i)].width=wd
+ws6.row_dimensions[3].height=62
+ws6.freeze_panes='D4'
+ws6.page_setup.orientation='landscape'; ws6.sheet_properties.pageSetUpPr.fitToPage=True; ws6.page_setup.fitToHeight=0
 wb.calculation.fullCalcOnLoad=True
 wb.save('Спецификация_витражей.xlsx')
