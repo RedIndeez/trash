@@ -94,8 +94,9 @@ ws2.row_dimensions[3].height=32
 # ---- Sheet 3
 ws3=wb.create_sheet('Привязка к чертежам')
 h3=['№','Чертёж','Литер','Марка','Дверь','X, мм','Y, мм','В КП']
-ws3.append(['Витражи на чертежах, входящие в КП (координаты — точка выноски, мм). «1 из 3» — на чертеже больше, чем в КП; какие именно — по КП не определить']); ws3['A1'].font=hf
-ws3.append([]); ws3.append(h3)
+ws3.append(['Витражи на чертежах, входящие в КП (координаты — точка выноски, мм)'])
+ws3.append(['«1 из 3» — на чертеже больше, чем в КП; какие именно — по КП не определить']); ws3['A1'].font=hf
+ws3.append(h3)
 for c in range(1,9): ws3.cell(3,c).font=hf; ws3.cell(3,c).alignment=C; ws3.cell(3,c).fill=fill
 for n,i in enumerate(sorted(inst,key=lambda i:(i['file'],LITS.index(i['lit']),key(i['mark']))),1):
     k=(i['mark'],i['lit']); ws3.append([n,i['file'],i['lit'],i['mark'],i['door'],i['x'],i['y'],'да' if drw[k]<=KP[k] else f'{KP[k]} из {drw[k]}'])
