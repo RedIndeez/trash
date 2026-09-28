@@ -15,7 +15,7 @@ KP={('Вн-6','А'):4,('Вн-8','А'):1,('Вн-14','А'):1,('Вн-15','А'):1,('
 ('Вн-6','Б'):4,('Вн-15','Б'):1,('Вн-17','Б'):1,('Вн-18','Б'):1,('Вн-22','Б'):5,('Вн-23','Б'):0,('Вн-24','Б'):0,
 ('Вн-6','В'):1,('Вн-13','В'):1,('Вн-16','В'):3,('Вн-17','В'):1,('Вн-19','В'):2,('Вн-22','В'):1,
 ('Вн-6','Г'):1,('Вн-10','Г'):1,('Вн-11','Г'):1,('Вн-12','Г'):1,('Вн-17','Г'):1,('Вн-20','Г'):1,('Вн-21','Г'):1,('Вн-22','Г'):0,
-('Вн-6','Д'):2,('Вн-7','Д'):1,('Вн-9','Д'):1,('Вн-17','Д'):1,
+('Вн-6','Д'):2,('Вн-7','Д'):1,('Вн-9','Д'):1,('Вн-17','Д'):1,('Вн-10','Д'):1,
 ('Вн-1','Ж'):0,('Вн-2','Ж'):0,('Вн-3','Ж'):0,('Вн-4','Ж'):0,('Вн-5','Ж'):0}
 marks=None
 cnt=collections.Counter({k:min(v,KP[k]) for k,v in drw.items() if KP[k]>0})
@@ -104,5 +104,37 @@ for rr in range(4,ws3.max_row+1):
     for c in range(1,9): ws3.cell(rr,c).alignment=C
     ws3.cell(rr,6).number_format='#,##0'; ws3.cell(rr,7).number_format='#,##0'
 for i,wd in enumerate([5,20,7,9,8,11,11,9],1): ws3.column_dimensions[L(i)].width=wd
+# ---- Sheet 4: есть в КП, но не вошло в спецификацию
+ws4=wb.create_sheet('В КП, не вошло')
+ws4.append(['Позиции КП, не вошедшие в спецификацию (нет на чертежах или на чертежах меньше, чем в КП)']); ws4['A1'].font=Font(bold=True,size=12)
+ws4.append([])
+h4=['№','Литер','Марка','Длина, мм','Высота, мм','Площадь 1 шт, м²','В КП, шт','Вошло в спецификацию, шт','Не вошло, шт','Площадь не вошедшего, м²','Причина']
+ws4.append(h4)
+for c in range(1,12): ws4.cell(3,c).font=hf; ws4.cell(3,c).alignment=C; ws4.cell(3,c).fill=fill
+rows=[]
+for (m,l),q in KP.items():
+    got=cnt[(m,l)]
+    if q>got:
+        w,h=S[m]
+        why='нет на чертежах' if drw[(m,l)]==0 else f'на чертежах {drw[(m,l)]} шт.'
+        rows.append((l,m,w,h,q,got,why))
+# остаток КП без литера (в таблице заказчика — строки «без литера»)
+for m,w in [('Вн-19',2860),('Вн-19',2920),('Вн-16',1320),('Вн-16',1020),('Вн-17',4020),('Вн-9',4060),('Вн-17',3750),('Вн-6',4130)]:
+    rows.append(('без литера',m,w,4800,1,0,'остаток КП без литера, по размеру к строкам договора не подходит'))
+rows.sort(key=lambda z:(LITS.index(z[0]) if z[0] in LITS else 9,key(z[1])))
+r=4
+for n,(l,m,w,h,q,got,why) in enumerate(rows,1):
+    ws4.append([n,l,m,w,h,f'=ROUND(D{r}*E{r}/1000000,2)',q,got,f'=G{r}-H{r}',f'=ROUND(I{r}*F{r},2)',why]); r+=1
+ws4.cell(r,3,'ИТОГО').font=hf
+for c in (7,8,9,10):
+    col=L(c); ws4.cell(r,c,f'=SUM({col}4:{col}{r-1})').font=hf
+for c in range(1,12): ws4.cell(r,c).fill=tf
+box(ws4,3,r,1,11)
+for rr in range(4,r+1):
+    for c in range(1,12): ws4.cell(rr,c).alignment=W if c==11 else C
+    ws4.cell(rr,6).number_format='0.00'; ws4.cell(rr,10).number_format='#,##0.00'
+for i,wd in enumerate([4,11,8,9,9,10,8,13,9,12,40],1): ws4.column_dimensions[L(i)].width=wd
+ws4.row_dimensions[3].height=60
+ws4.page_setup.orientation='landscape'; ws4.sheet_properties.pageSetUpPr.fitToPage=True; ws4.page_setup.fitToHeight=0
 wb.calculation.fullCalcOnLoad=True
 wb.save('Спецификация_витражей.xlsx')
