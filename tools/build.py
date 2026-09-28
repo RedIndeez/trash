@@ -323,6 +323,7 @@ ws6.merge_cells(start_row=r,start_column=3,end_row=r,end_column=8)
 ws6.cell(r,9,f'=I{t1}+I{t2}').font=hf; ws6.cell(r,10,f'=J{t1}+J{t2}').font=hf; ws6.cell(r,10).number_format='#,##0.00'
 for c in range(1,NC+1): ws6.cell(r,c).fill=tf
 box(ws6,r,r,1,NC)
+ws6.cell(r+2,1,'Двери закрываются отдельными строками ВДЦ; площадь витражей — полным габаритом по ВДЦ, без вычета площади дверей.')
 for i,wd in enumerate([4,6,10,12,8,8,10,12,10,11,11,9,44],1): ws6.column_dimensions[L(i)].width=wd
 ws6.freeze_panes='D4'
 ws6.page_setup.orientation='landscape'; ws6.sheet_properties.pageSetUpPr.fitToPage=True; ws6.page_setup.fitToHeight=0
